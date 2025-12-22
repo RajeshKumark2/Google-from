@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto text-center">
+        <h1 class="display-4 mb-4">Welcome to User Profiles Dashboard</h1>
+        <p class="lead">Manage and analyze user data collected from Google Forms</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-4 mb-3">
+                <div class="card text-white bg-primary h-100">
+                    <div class="card-body">
+                        <i class="fas fa-tachometer-alt fa-3x mb-3"></i>
+                        <h5 class="card-title">Dashboard</h5>
+                        <p class="card-text">View statistics and analytics</p>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-light">Go to Dashboard</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card text-white bg-success h-100">
+                    <div class="card-body">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <h5 class="card-title">View Profiles</h5>
+                        <p class="card-text">See all user profiles</p>
+                        <a href="{{ url_for('profiles') }}" class="btn btn-light">View All</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+                <div class="card text-white bg-info h-100">
+                    <div class="card-body">
+                        <i class="fas fa-search fa-3x mb-3"></i>
+                        <h5 class="card-title">Search & Filter</h5>
+                        <p class="card-text">Find specific users</p>
+                        <a href="{{ url_for('search') }}" class="btn btn-light">Search Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-5">
+            <h3>Quick Actions</h3>
+            <div class="d-grid gap-2 d-md-block mt-3">
+                <a href="{{ url_for('add_profile') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-user-plus"></i> Add New Profile
+                </a>
+                <a href="{{ url_for('profiles') }}" class="btn btn-secondary btn-lg">
+                    <i class="fas fa-list"></i> View All Profiles
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4><i class="fas fa-user-edit"></i> Edit Profile - {{ user.name }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <!-- Profile Picture (Placeholder for future) -->
+                    <div class="text-center mb-4">
+                        <div class="profile-pic mb-3">
+                            <div style="width: 120px; height: 120px; background: var(--gradient-primary); 
+                                      border-radius: 50%; display: inline-flex; align-items: center; 
+                                      justify-content: center; color: white; font-size: 2.5rem;">
+                                {{ user.name[0]|upper }}
+                            </div>
+                        </div>
+                        <h5 class="text-gradient">{{ user.name }}</h5>
+                        <p class="text-muted">{{ user.email }}</p>
+                    </div>
+
+                    <div class="row">
+                        <!-- Left Column -->
+                        <div class="col-md-6">
+                            <!-- Name -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label">
+                                    <i class="fas fa-user me-2"></i>Full Name *
+                                </label>
+                                <input type="text" class="form-control" id="name" name="name" 
+                                       value="{{ user.name }}" required>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">
+                                    <i class="fas fa-envelope me-2"></i>Email Address *
+                                </label>
+                                <input type="email" class="form-control" id="email" name="email" 
+                                       value="{{ user.email }}" required>
+                            </div>
+
+                            <!-- Current Job -->
+                            <div class="mb-3">
+                                <label for="current_job" class="form-label">
+                                    <i class="fas fa-briefcase me-2"></i>Current Position
+                                </label>
+                                <input type="text" class="form-control" id="current_job" name="current_job" 
+                                       value="{{ user.current_job or '' }}">
+                                <div class="form-text">Your current job title/role</div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="col-md-6">
+                            <!-- Qualification -->
+                            <div class="mb-3">
+                                <label for="qualification" class="form-label">
+                                    <i class="fas fa-graduation-cap me-2"></i>Highest Qualification
+                                </label>
+                                <select class="form-select" id="qualification" name="qualification">
+                                    <option value="">Select Qualification</option>
+                                    <option value="Bachelor's Degree" 
+                                            {% if user.qualification == "Bachelor's Degree" %}selected{% endif %}>
+                                        Bachelor's Degree
+                                    </option>
+                                    <option value="Master's Degree" 
+                                            {% if user.qualification == "Master's Degree" %}selected{% endif %}>
+                                        Master's Degree
+                                    </option>
+                                    <option value="PhD" 
+                                            {% if user.qualification == "PhD" %}selected{% endif %}>
+                                        PhD
+                                    </option>
+                                    <option value="Diploma" 
+                                            {% if user.qualification == "Diploma" %}selected{% endif %}>
+                                        Diploma
+                                    </option>
+                                    <option value="Other" 
+                                            {% if user.qualification == "Other" %}selected{% endif %}>
+                                        Other
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Field -->
+                            <div class="mb-3">
+                                <label for="field" class="form-label">
+                                    <i class="fas fa-industry me-2"></i>Field of Work
+                                </label>
+                                <select class="form-select" id="field" name="field">
+                                    <option value="">Select Field</option>
+                                    <option value="IT & Software" 
+                                            {% if user.field == "IT & Software" %}selected{% endif %}>
+                                        IT & Software
+                                    </option>
+                                    <option value="Healthcare" 
+                                            {% if user.field == "Healthcare" %}selected{% endif %}>
+                                        Healthcare
+                                    </option>
+                                    <option value="Finance" 
+                                            {% if user.field == "Finance" %}selected{% endif %}>
+                                        Finance
+                                    </option>
+                                    <option value="Marketing & Sales" 
+                                            {% if user.field == "Marketing & Sales" %}selected{% endif %}>
+                                        Marketing & Sales
+                                    </option>
+                                    <option value="Education" 
+                                            {% if user.field == "Education" %}selected{% endif %}>
+                                        Education
+                                    </option>
+                                    <option value="Engineering" 
+                                            {% if user.field == "Engineering" %}selected{% endif %}>
+                                        Engineering
+                                    </option>
+                                    <option value="Other" 
+                                            {% if user.field == "Other" %}selected{% endif %}>
+                                        Other
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Job Type -->
+                            <div class="mb-3">
+                                <label for="job_type" class="form-label">
+                                    <i class="fas fa-clock me-2"></i>Employment Type
+                                </label>
+                                <select class="form-select" id="job_type" name="job_type">
+                                    <option value="">Select Job Type</option>
+                                    <option value="Full time" 
+                                            {% if user.job_type == "Full time" %}selected{% endif %}>
+                                        Full time
+                                    </option>
+                                    <option value="Part time" 
+                                            {% if user.job_type == "Part time" %}selected{% endif %}>
+                                        Part time
+                                    </option>
+                                    <option value="Contract" 
+                                            {% if user.job_type == "Contract" %}selected{% endif %}>
+                                        Contract
+                                    </option>
+                                    <option value="Freelance" 
+                                            {% if user.job_type == "Freelance" %}selected{% endif %}>
+                                        Freelance
+                                    </option>
+                                    <option value="Internship" 
+                                            {% if user.job_type == "Internship" %}selected{% endif %}>
+                                        Internship
+                                    </option>
+                                    <option value="Self employed" 
+                                            {% if user.job_type == "Self employed" %}selected{% endif %}>
+                                        Self employed
+                                    </option>
+                                    <option value="Unemployed" 
+                                            {% if user.job_type == "Unemployed" %}selected{% endif %}>
+                                        Unemployed
+                                    </option>
+                                    <option value="Other" 
+                                            {% if user.job_type == "Other" %}selected{% endif %}>
+                                        Other
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="fas fa-info-circle me-2"></i>Profile Information
+                        </label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="alert alert-info p-3">
+                                    <small>
+                                        <i class="fas fa-calendar me-2"></i>
+                                        <strong>Member Since:</strong><br>
+                                        {{ user.created_at.strftime('%B %d, %Y') }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="alert alert-light p-3">
+                                    <small>
+                                        <i class="fas fa-id-card me-2"></i>
+                                        <strong>Profile ID:</strong><br>
+                                        #{{ user.id }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <div>
+                            <a href="{{ url_for('view_profile', id=user.id) }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('delete_profile', id=user.id) }}" 
+                               class="btn btn-danger me-2"
+                               onclick="return confirm('Are you sure you want to delete this profile? This action cannot be undone.')">
+                                <i class="fas fa-trash me-2"></i>Delete
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

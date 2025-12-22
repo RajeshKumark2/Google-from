@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<div class="dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <h1 class="dashboard-title">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard Overview
+                <small class="text-muted" style="font-size: 1rem;">Total Users: {{ total_users }}</small>
+            </h1>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-5 fade-in">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card bg-primary">
+                <i class="fas fa-users"></i>
+                <h2>{{ total_users }}</h2>
+                <h5>Total Users</h5>
+                <small>All registered profiles</small>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card bg-success">
+                <i class="fas fa-briefcase"></i>
+                <h2>{{ fields|length }}</h2>
+                <h5>Different Fields</h5>
+                <small>Various industries</small>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card bg-info">
+                <i class="fas fa-user-tie"></i>
+                <h2>{{ job_types|length }}</h2>
+                <h5>Job Types</h5>
+                <small>Employment categories</small>
+            </div>
+        </div>
+        
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stat-card bg-warning">
+                <i class="fas fa-graduation-cap"></i>
+                <h2>{{ qualifications|length }}</h2>
+                <h5>Qualifications</h5>
+                <small>Education levels</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts and Data Section -->
+    <div class="row">
+        <!-- Field Distribution -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-pie"></i> Field Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if fields %}
+                                {% for field, count in fields.items() %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary me-2">{{ field }}</span>
+                                    </td>
+                                    <td><strong>{{ count }}</strong></td>
+                                    <td>{{ ((count/total_users)*100)|round(1) if total_users > 0 else 0 }}%</td>
+                                    <td style="width: 30%;">
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" 
+                                                 style="width: {{ ((count/total_users)*100) if total_users > 0 else 0 }}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    No field data available
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job Type Distribution -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar"></i> Job Type Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Job Type</th>
+                                <th>Count</th>
+                                <th>Percentage</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if job_types %}
+                                {% for job_type, count in job_types.items() %}
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-info me-2">{{ job_type }}</span>
+                                    </td>
+                                    <td><strong>{{ count }}</strong></td>
+                                    <td>{{ ((count/total_users)*100)|round(1) if total_users > 0 else 0 }}%</td>
+                                    <td style="width: 30%;">
+                                        <div class="progress">
+                                            <div class="progress-bar bg-info" role="progressbar" 
+                                                 style="width: {{ ((count/total_users)*100) if total_users > 0 else 0 }}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    No job type data available
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Qualifications Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-graduation-cap"></i> Educational Qualifications</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if qualifications %}
+                            {% for qualification, count in qualifications.items() %}
+                            <div class="col-md-3 mb-3">
+                                <div class="metric-card primary">
+                                    <div class="metric-value">{{ count }}</div>
+                                    <div class="metric-label">{{ qualification }}</div>
+                                    <div class="progress mt-3">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ ((count/total_users)*100) if total_users > 0 else 0 }}%">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted mt-2">
+                                        {{ ((count/total_users)*100)|round(1) if total_users > 0 else 0 }}%
+                                    </small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div class="col-12">
+                            <div class="empty-state">
+                                <i class="fas fa-graduation-cap"></i>
+                                <h4>No Qualification Data</h4>
+                                <p>Add user data to see qualifications distribution</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-bolt"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('add_profile') }}" class="btn btn-primary btn-lg w-100 py-3">
+                                <i class="fas fa-user-plus fa-2x mb-2"></i><br>
+                                Add New Profile
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('profiles') }}" class="btn btn-success btn-lg w-100 py-3">
+                                <i class="fas fa-users fa-2x mb-2"></i><br>
+                                View All Profiles
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('search') }}" class="btn btn-info btn-lg w-100 py-3">
+                                <i class="fas fa-search fa-2x mb-2"></i><br>
+                                Advanced Search
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="{{ url_for('home') }}" class="btn btn-warning btn-lg w-100 py-3">
+                                <i class="fas fa-home fa-2x mb-2"></i><br>
+                                Back to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Statistics - FIXED VERSION (No max() function) -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="fas fa-history"></i> Recent Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <div class="text-primary fw-bold h4">{{ fields|length }}</div>
+                                <div class="text-muted">Different Fields</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <div class="text-success fw-bold h4">{{ job_types|length }}</div>
+                                <div class="text-muted">Job Types</div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="p-3">
+                                <div class="text-warning fw-bold h4">{{ qualifications|length }}</div>
+                                <div class="text-muted">Qualifications</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h6>Top Fields:</h6>
+                            <ul class="list-unstyled">
+                                {% if fields %}
+                                    {% for field, count in fields.items() %}
+                                    <li class="mb-2">
+                                        <span class="badge bg-primary">{{ field }}</span>
+                                        <span class="float-end">{{ count }} users</span>
+                                    </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li class="text-muted">No field data available</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Top Job Types:</h6>
+                            <ul class="list-unstyled">
+                                {% if job_types %}
+                                    {% for job_type, count in job_types.items() %}
+                                    <li class="mb-2">
+                                        <span class="badge bg-info">{{ job_type }}</span>
+                                        <span class="float-end">{{ count }} users</span>
+                                    </li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li class="text-muted">No job type data available</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Dashboard -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate progress bars on scroll
+    const progressBars = document.querySelectorAll('.progress-bar');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const width = entry.target.style.width;
+                entry.target.style.width = '0%';
+                setTimeout(() => {
+                    entry.target.style.width = width;
+                }, 300);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    progressBars.forEach(bar => observer.observe(bar));
+    
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-10px)';
+        });
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
+{% endblock %}

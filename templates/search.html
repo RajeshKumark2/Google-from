@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+<div class="search-page">
+    <!-- Search Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4><i class="fas fa-search me-2"></i>Advanced User Search</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ url_for('search') }}" method="get" class="search-form">
+                        <div class="row">
+                            <!-- Search Input -->
+                            <div class="col-md-6 mb-3">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-primary text-white">
+                                        <i class="fas fa-search"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-lg" 
+                                           name="q" id="searchInput" 
+                                           placeholder="Search by name, email, or job role..."
+                                           value="{{ query }}">
+                                </div>
+                            </div>
+
+                            <!-- Field Filter -->
+                            <div class="col-md-3 mb-3">
+                                <select class="form-select form-select-lg" name="field" id="fieldFilter">
+                                    <option value="">All Fields</option>
+                                    {% for field in fields %}
+                                        <option value="{{ field }}" 
+                                                {% if request.args.get('field') == field %}selected{% endif %}>
+                                            {{ field }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <!-- Job Type Filter -->
+                            <div class="col-md-3 mb-3">
+                                <select class="form-select form-select-lg" name="job_type" id="jobTypeFilter">
+                                    <option value="">All Job Types</option>
+                                    {% for job_type in job_types %}
+                                        <option value="{{ job_type }}" 
+                                                {% if request.args.get('job_type') == job_type %}selected{% endif %}>
+                                            {{ job_type }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Filter Buttons -->
+                        <div class="filter-section mt-3">
+                            <div class="filter-title mb-2">Quick Filters:</div>
+                            <div class="filter-buttons">
+                                <button type="button" class="filter-btn" 
+                                        onclick="setFilter('field', 'IT & Software')">
+                                    IT Professionals
+                                </button>
+                                <button type="button" class="filter-btn" 
+                                        onclick="setFilter('job_type', 'Full time')">
+                                    Full-time Employees
+                                </button>
+                                <button type="button" class="filter-btn" 
+                                        onclick="setFilter('qualification', 'Master')">
+                                    Masters Degree
+                                </button>
+                                <button type="button" class="filter-btn" 
+                                        onclick="clearFilters()">
+                                    Clear All
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Search Actions -->
+                        <div class="row mt-4">
+                            <div class="col-md-8">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-search me-2"></i>Search
+                                    </button>
+                                    <button type="button" class="btn btn-outline-primary btn-lg" 
+                                            onclick="toggleAdvancedFilters()">
+                                        <i class="fas fa-sliders-h me-2"></i>Advanced Filters
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <span class="badge bg-info p-3">
+                                    <i class="fas fa-users me-2"></i>
+                                    Found: {{ users|length }} users
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Advanced Filters (Hidden by default) -->
+                        <div class="advanced-filters mt-4" id="advancedFilters" style="display: none;">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="mb-3"><i class="fas fa-filter me-2"></i>Advanced Filters</h6>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Qualification:</label>
+                                            <select class="form-select" name="qualification">
+                                                <option value="">Any Qualification</option>
+                                                <option value="Bachelor's Degree">Bachelor's Degree</option>
+                                                <option value="Master's Degree">Master's Degree</option>
+                                                <option value="PhD">PhD</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Sort By:</label>
+                                            <select class="form-select" name="sort">
+                                                <option value="name">Name (A-Z)</option>
+                                                <option value="name_desc">Name (Z-A)</option>
+                                                <option value="date">Date Joined (Newest)</option>
+                                                <option value="date_old">Date Joined (Oldest)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Results Per Page:</label>
+                                            <select class="form-select" name="per_page">
+                                                <option value="10">10 per page</option>
+                                                <option value="25">25 per page</option>
+                                                <option value="50">50 per page</option>
+                                                <option value="100">100 per page</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    {% if users %}
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Search Results
+                    <small class="text-muted">({{ users|length }} users found)</small>
+                </h5>
+                <div class="export-section">
+                    <button class="btn btn-success" onclick="exportResults()">
+                        <i class="fas fa-download me-2"></i>Export Results
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        {% for user in users %}
+        <div class="col-lg-6 mb-4 user-card">
+            <div class="card h-100 hover-lift">
+                <div class="card-body">
+                    <div class="d-flex align-items-start">
+                        <!-- User Avatar -->
+                        <div class="user-avatar me-3">
+                            <div style="width: 60px; height: 60px; background: var(--gradient-primary); 
+                                      border-radius: 50%; display: flex; align-items: center; 
+                                      justify-content: center; color: white; font-size: 1.5rem; 
+                                      font-weight: bold;">
+                                {{ user.name[0]|upper }}
+                            </div>
+                        </div>
+                        
+                        <!-- User Info -->
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">{{ user.name }}</h5>
+                                    <p class="text-muted mb-2">
+                                        <i class="fas fa-envelope me-1"></i>{{ user.email }}
+                                    </p>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-primary">{{ user.field or 'N/A' }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <p class="mb-1">
+                                        <small class="text-muted">Qualification:</small><br>
+                                        <span class="badge bg-info">{{ user.qualification or 'N/A' }}</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="mb-1">
+                                        <small class="text-muted">Job Type:</small><br>
+                                        <span class="badge bg-secondary">{{ user.job_type or 'N/A' }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <p class="mb-1">
+                                <small class="text-muted">Current Position:</small><br>
+                                <strong>{{ user.current_job or 'Not specified' }}</strong>
+                            </p>
+                            
+                            <p class="mb-0">
+                                <small class="text-muted">Member since:</small>
+                                {{ user.created_at.strftime('%d %b %Y') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent">
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('view_profile', id=user.id) }}" 
+                           class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-eye me-1"></i>View
+                        </a>
+                        <a href="{{ url_for('edit_profile', id=user.id) }}" 
+                           class="btn btn-sm btn-outline-warning">
+                            <i class="fas fa-edit me-1"></i>Edit
+                        </a>
+                        <a href="mailto:{{ user.email }}" 
+                           class="btn btn-sm btn-outline-info">
+                            <i class="fas fa-envelope me-1"></i>Email
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination (Future Enhancement) -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <nav aria-label="Search results pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <span class="page-link">Previous</span>
+                    </li>
+                    <li class="page-item active">
+                        <span class="page-link">1</span>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No Results Found -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-search fa-5x text-muted mb-4"></i>
+                        <h3>No Users Found</h3>
+                        <p class="text-muted mb-4">
+                            {% if query or request.args.get('field') or request.args.get('job_type') %}
+                                No users match your search criteria. Try different keywords or filters.
+                            {% else %}
+                                No users in the database. Add some users to get started!
+                            {% endif %}
+                        </p>
+                        <div class="mt-4">
+                            {% if query or request.args.get('field') or request.args.get('job_type') %}
+                                <button class="btn btn-primary me-2" onclick="clearFilters()">
+                                    <i class="fas fa-times me-2"></i>Clear All Filters
+                                </button>
+                            {% endif %}
+                            <a href="{{ url_for('add_profile') }}" class="btn btn-success">
+                                <i class="fas fa-user-plus me-2"></i>Add New User
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// JavaScript for Search Page
+function setFilter(filterName, filterValue) {
+    document.getElementById(filterName + 'Filter').value = filterValue;
+    document.querySelector('.search-form').submit();
+}
+
+function clearFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('fieldFilter').value = '';
+    document.getElementById('jobTypeFilter').value = '';
+    document.querySelector('.search-form').submit();
+}
+
+function toggleAdvancedFilters() {
+    const advancedFilters = document.getElementById('advancedFilters');
+    if (advancedFilters.style.display === 'none') {
+        advancedFilters.style.display = 'block';
+    } else {
+        advancedFilters.style.display = 'none';
+    }
+}
+
+function exportResults() {
+    // In a real application, this would export to CSV or Excel
+    const results = {{ users|length }};
+    alert(`Exporting ${results} users to CSV... (This is a demo)`);
+    
+    // Here you would typically make an AJAX call to export endpoint
+    // fetch('/export?q={{ query }}&field={{ request.args.get('field') }}&job_type={{ request.args.get('job_type') }}')
+}
+
+// Real-time search filtering
+document.getElementById('searchInput').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const userCards = document.querySelectorAll('.user-card');
+    
+    userCards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(searchTerm) ? 'block' : 'none';
+    });
+});
+
+// Add keyboard shortcut for search
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        document.getElementById('searchInput').focus();
+    }
+});
+
+// Initialize tooltips
+document.addEventListener('DOMContentLoaded', function() {
+    const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltips.forEach(tooltip => {
+        new bootstrap.Tooltip(tooltip);
+    });
+});
+</script>
+
+<style>
+.search-form .input-group-text {
+    border-radius: 12px 0 0 12px;
+    border: none;
+}
+
+.user-avatar {
+    flex-shrink: 0;
+}
+
+.user-card {
+    transition: transform 0.3s ease;
+}
+
+.user-card:hover {
+    transform: translateY(-5px);
+}
+
+.filter-btn {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    transform: translateY(-2px);
+}
+
+.advanced-filters {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.pagination .page-link {
+    border-radius: 8px;
+    margin: 0 5px;
+    border: none;
+    color: var(--primary);
+}
+
+.pagination .page-item.active .page-link {
+    background: var(--gradient-primary);
+    border: none;
+}
+</style>
+{% endblock %}
