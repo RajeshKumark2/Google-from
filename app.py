@@ -32,18 +32,10 @@ def home():
 
 @app.route('/dashboard')
 def dashboard():
-    # Get statistics
     total_users = User.query.count()
-    
-    # Field-wise count
     fields = db.session.query(User.field, db.func.count(User.id)).group_by(User.field).all()
-    
-    # Job type count
     job_types = db.session.query(User.job_type, db.func.count(User.id)).group_by(User.job_type).all()
-    
-    # Qualification count
-    qualifications = db.session.query(User.qualification, db.func.count(User.id)).group_by(User.qualification).all()
-    
+    qualifications = db.session.query(User.qualification, db.func.count(User.id)).group_by(User.qualification).all()    
     return render_template('dashboard.html',
                          total_users=total_users,
                          fields=dict(fields),
@@ -146,8 +138,7 @@ def search():
     
     # Get unique values for filters
     fields = db.session.query(User.field).distinct().all()
-    job_types = db.session.query(User.job_type).distinct().all()
-    
+    job_types = db.session.query(User.job_type).distinct().all()    
     return render_template('search.html', 
                          users=users, 
                          query=query,
