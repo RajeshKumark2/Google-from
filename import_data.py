@@ -3,13 +3,9 @@ from app import app, db, User
 import os
 
 def import_csv_to_db():
-    # CSV file path
-    csv_file = 'data/form_responses.csv'
-    
+    csv_file = 'data/form_responses.csv'    
     # Read CSV file
-    df = pd.read_csv(csv_file)
-    
-    # Rename columns if needed
+    df = pd.read_csv(csv_file)    
     column_mapping = {
         'Name': 'name',
         'Email ID': 'email',
@@ -23,9 +19,7 @@ def import_csv_to_db():
     
     # Create database tables
     with app.app_context():
-        db.create_all()
-        
-        # Import each row
+        db.create_all()        
         for index, row in df.iterrows():
             user = User(
                 name=row['name'],
